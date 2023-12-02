@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use anyhow::Result;
 
 fn main() -> Result<()> {
@@ -9,11 +11,53 @@ fn main() -> Result<()> {
 }
 
 fn solve(input: &str) -> Result<String> {
-    let mut sum = 0;
+    let mut possible_games: Vec<i32> = vec![];
 
-    // The bag contains 12 red cubes, 13 green cubes, and 14 blue cubes
-    //
-    Ok(format!("{}", sum))
+    let actual_bag = HashMap::from([("red", 12), ("green", 13), ("blue", 14)]);
+
+    for line in input.lines() {
+        // Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
+        let mut line_parts = line.split(":");
+        let game_parts: Vec<&str> = line_parts
+            .next()
+            .expect("game")
+            .split_whitespace()
+            .collect();
+        let game_number = game_parts
+            .last()
+            .expect("number")
+            .parse::<i32>()
+            .expect("game number");
+        let mut possible = true;
+        for draw_texts in line_parts {
+            // 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
+            for color in draw_texts.split(";") {
+                // 3 blue, 4 red
+                for color_part in color.trim().split(",") {
+                    let mut color_part = color_part.split_whitespace();
+                    let count = color_part
+                        .next()
+                        .expect("number")
+                        .parse::<i32>()
+                        .expect("draw number");
+                    let key = color_part.next().expect("color");
+
+                    if let Some(true_value) = actual_bag.get(key) {
+                        if count > *true_value {
+                            eprintln!("{}: {} > {}", key, count, true_value);
+                            possible = false;
+                        }
+                    }
+                }
+            }
+        }
+
+        if possible {
+            possible_games.push(game_number);
+        }
+    }
+
+    Ok(format!("{}", possible_games.iter().sum::<i32>()))
 }
 
 #[cfg(test)]
@@ -31,7 +75,7 @@ Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red
 Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green";
         // Game 1, 2 and 5 are possible
         let result = "8".to_string();
-        assert!(solve(input).unwrap() == result);
+        assert!(solve(input)? == result);
 
         Ok(())
     }
