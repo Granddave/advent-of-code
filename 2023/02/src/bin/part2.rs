@@ -23,11 +23,7 @@ fn solve(input: &str) -> Result<String> {
                 // 3 blue, 4 red
                 for color_part in color.trim().split(",") {
                     let mut color_part = color_part.split_whitespace();
-                    let count = color_part
-                        .next()
-                        .expect("number")
-                        .parse::<i32>()
-                        .expect("draw number");
+                    let count = color_part.next().expect("number").parse::<i32>()?;
                     let key = color_part.next().expect("color");
 
                     // Make sure to have the highest count for each color
