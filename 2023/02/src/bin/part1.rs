@@ -15,19 +15,10 @@ fn solve(input: &str) -> Result<String> {
 
     let actual_bag = HashMap::from([("red", 12), ("green", 13), ("blue", 14)]);
 
-    for line in input.lines() {
+    for (line_ix, line) in input.lines().enumerate() {
         // Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
-        let mut line_parts = line.split(":");
-        let game_parts: Vec<&str> = line_parts
-            .next()
-            .expect("game")
-            .split_whitespace()
-            .collect();
-        let game_number = game_parts
-            .last()
-            .expect("number")
-            .parse::<i32>()
-            .expect("game number");
+        let line_parts = line.split(":").skip(1);
+        let game_number = line_ix as i32 + 1;
         let mut possible = true;
         for draw_texts in line_parts {
             // 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
