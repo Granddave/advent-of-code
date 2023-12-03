@@ -10,7 +10,6 @@ fn main() -> Result<()> {
 
 fn is_symbol(ch: char) -> bool {
     if !ch.is_numeric() && ch != '.' && ch != '\n' {
-        // println!("{}", ch);
         return true;
     }
     false
