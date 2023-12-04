@@ -11,31 +11,32 @@ fn main() -> Result<()> {
 }
 
 fn solve(input: &str) -> Result<String> {
-    let mut sum = 0;
-
-    for line in input.lines() {
-        let (winning, numbers) = line
-            .split(":")
-            .nth(1)
-            .expect("numbers")
-            .split_once("|")
-            .map(|(w, g)| {
-                (
-                    w.split_whitespace()
-                        .map(|x| x.parse::<i32>().unwrap())
-                        .collect::<HashSet<i32>>(),
-                    g.split_whitespace()
-                        .map(|x| x.parse::<i32>().unwrap())
-                        .collect::<HashSet<i32>>(),
-                )
-            })
-            .expect("winning and guesses");
-        sum += match numbers.intersection(&winning).count() as i32 {
-            0 => 0,
-            1 => 1,
-            n => 2u32.pow(n as u32 - 1),
-        };
-    }
+    let sum: i32 = input
+        .lines()
+        .map(|line| {
+            let (winning, numbers) = line
+                .split(":")
+                .nth(1)
+                .expect("numbers")
+                .split_once("|")
+                .map(|(w, g)| {
+                    (
+                        w.split_whitespace()
+                            .map(|x| x.parse::<i32>().unwrap())
+                            .collect::<HashSet<i32>>(),
+                        g.split_whitespace()
+                            .map(|x| x.parse::<i32>().unwrap())
+                            .collect::<HashSet<i32>>(),
+                    )
+                })
+                .expect("winning and guesses");
+            match winning.intersection(&numbers).count() as i32 {
+                0 => 0,
+                1 => 1,
+                n => 2u32.pow(n as u32 - 1),
+            }
+        } as i32)
+        .sum();
 
     Ok(sum.to_string())
 }
