@@ -57,8 +57,7 @@ fn solve(input: &str) -> Result<String> {
         .iter_mut()
         .map(|seed| {
             for ranges in &mappings {
-                let range = ranges.iter().filter(|range| range.contains(*seed)).next();
-                if let Some(range) = range {
+                if let Some(range) = ranges.iter().filter(|range| range.contains(*seed)).next() {
                     *seed += range.dst_start - range.src_start
                 }
             }
