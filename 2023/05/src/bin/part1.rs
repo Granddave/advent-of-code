@@ -8,10 +8,66 @@ fn main() -> Result<()> {
     Ok(())
 }
 
-fn solve(input: &str) -> Result<String> {
-    // dst start, src start, src len
+#[derive(Debug)]
+struct Range {
+    dst_start: i64,
+    src_start: i64,
+    src_len: i64,
+}
 
-    Ok("".to_string())
+impl Range {
+    fn contains(&self, value: i64) -> bool {
+        value >= self.src_start && value < self.src_start + self.src_len
+    }
+}
+
+fn solve(input: &str) -> Result<String> {
+    let mut almanac_parts = input.split("\n\n");
+
+    let mut seeds = almanac_parts
+        .next()
+        .expect("no seeds")
+        .split(":")
+        .nth(1)
+        .expect("no seeds")
+        .split_whitespace()
+        .map(|n| n.parse::<i64>().expect("invalid seed"))
+        .collect::<Vec<i64>>();
+
+    let mappings = almanac_parts
+        .map(|part| {
+            part.lines()
+                .skip(1)
+                .map(|line| {
+                    let values = line
+                        .split_whitespace()
+                        .map(|n| n.parse::<i64>().expect("invalid value"))
+                        .collect::<Vec<i64>>();
+                    Range {
+                        dst_start: values[0],
+                        src_start: values[1],
+                        src_len: values[2],
+                    }
+                })
+                .collect::<Vec<Range>>()
+        })
+        .collect::<Vec<_>>();
+
+    let min_value = seeds
+        .iter_mut()
+        .map(|seed| {
+            for ranges in &mappings {
+                let range = ranges.iter().filter(|range| range.contains(*seed)).next();
+                if let Some(range) = range {
+                    *seed += range.dst_start - range.src_start
+                }
+            }
+            *seed
+        })
+        .min()
+        .unwrap();
+
+    Ok(min_value.to_string())
 }
 
 #[cfg(test)]
