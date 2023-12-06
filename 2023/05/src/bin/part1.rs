@@ -24,7 +24,7 @@ impl Range {
 fn solve(input: &str) -> Result<String> {
     let mut almanac_parts = input.split("\n\n");
 
-    let seeds = almanac_parts
+    let mut seeds = almanac_parts
         .next()
         .expect("no seeds")
         .split(':')
@@ -54,17 +54,14 @@ fn solve(input: &str) -> Result<String> {
         .collect::<Vec<_>>();
 
     let min_value = seeds
-        .iter()
+        .iter_mut()
         .map(|seed| {
-            mappings
-                .iter()
-                .find_map(|ranges| {
-                    ranges
-                        .iter()
-                        .find(|range| range.contains(*seed))
-                        .map(|range| *seed + range.dst_start - range.src_start)
-                })
-                .unwrap_or(*seed)
+            for ranges in &mappings {
+                if let Some(range) = ranges.iter().filter(|range| range.contains(*seed)).next() {
+                    *seed += range.dst_start - range.src_start
+                }
+            }
+            *seed
         })
         .min()
         .unwrap();
